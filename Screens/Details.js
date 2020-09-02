@@ -12,6 +12,7 @@ import {
 import Icons from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DetailItem from '../Components/DetailItem';
+import Comments from '../Components/Comments';
 
 export default class Details extends React.Component {
   constructor(props) {
@@ -65,287 +66,294 @@ export default class Details extends React.Component {
     return (
       <View style={{flex: 1}}>
         <ScrollView style={styles.main_container}>
-          <View style={styles.imgBackground_container}>
-            <ImageBackground
-              source={require('../Images/pizza_margherita.jpg')}
-              style={styles.imgBackground}></ImageBackground>
-          </View>
+          <View style={{paddingBottom: 30}}>
+            <View style={styles.imgBackground_container}>
+              <ImageBackground
+                source={require('../Images/pizza_margherita.jpg')}
+                style={styles.imgBackground}></ImageBackground>
+            </View>
 
-          <View style={styles.second_container}>
-            <Text style={styles.title_text}>Pizza Margheritta</Text>
-            <View style={{flexDirection: 'row', marginTop: 5}}>
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#A9A9B0'}} />
-            </View>
-            <View style={styles.description_container}>
-              <Text style={styles.description_text}>
-                For a vegetarian looking for a BIG treat that goes easy on the
-                spices, this one's got it all.. The onions, the capsicum, those
-                delectable mushrooms - with paneer and golden corn to top it
-                all.
-              </Text>
-            </View>
-            <View style={styles.supplements_container}>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    fontFamily: 'SFProDisplay-Regular',
-                    fontSize: 14,
-                    color: '#3B3B3B',
-                  }}>
-                  Sizes
+            <View style={styles.second_container}>
+              <Text style={styles.title_text}>Pizza Margheritta</Text>
+              <View style={{flexDirection: 'row', marginTop: 5}}>
+                <Icons name="star" size={18} style={{color: '#F34949'}} />
+                <Icons name="star" size={18} style={{color: '#F34949'}} />
+                <Icons name="star" size={18} style={{color: '#F34949'}} />
+                <Icons name="star" size={18} style={{color: '#F34949'}} />
+                <Icons name="star" size={18} style={{color: '#A9A9B0'}} />
+              </View>
+              <View style={styles.description_container}>
+                <Text style={styles.description_text}>
+                  For a vegetarian looking for a BIG treat that goes easy on the
+                  spices, this one's got it all.. The onions, the capsicum,
+                  those delectable mushrooms - with paneer and golden corn to
+                  top it all.
                 </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 5,
-                  }}>
-                  <DetailItem
-                    selectedItem={this.state.smallSelected}
-                    size="Small"
-                    price={10}
-                    action={() => this.SelectedSmall()}
-                  />
-                  <DetailItem
-                    selectedItem={this.state.mediumSelected}
-                    size="Medium"
-                    price={15}
-                    action={() => this.SelectedMedium()}
-                  />
-                  <DetailItem
-                    selectedItem={this.state.largeSelected}
-                    size="Large"
-                    price={100}
-                    action={() => this.SelectedLarge()}
-                  />
+              </View>
+              <View style={styles.supplements_container}>
+                <View style={{flex: 1}}>
+                  <Text
+                    style={{
+                      fontFamily: 'SFProDisplay-Regular',
+                      fontSize: 14,
+                      color: '#3B3B3B',
+                    }}>
+                    Sizes
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: 5,
+                    }}>
+                    <DetailItem
+                      selectedItem={this.state.smallSelected}
+                      size="Small"
+                      price={10}
+                      action={() => this.SelectedSmall()}
+                    />
+                    <DetailItem
+                      selectedItem={this.state.mediumSelected}
+                      size="Medium"
+                      price={15}
+                      action={() => this.SelectedMedium()}
+                    />
+                    <DetailItem
+                      selectedItem={this.state.largeSelected}
+                      size="Large"
+                      price={100}
+                      action={() => this.SelectedLarge()}
+                    />
+                  </View>
+                </View>
+
+                <View style={{flex: 1, marginTop: 15}}>
+                  <Text
+                    style={{
+                      fontFamily: 'SFProDisplay-Regular',
+                      fontSize: 14,
+                      color: '#3B3B3B',
+                    }}>
+                    Crust
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: 5,
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        borderColor: '#F34949',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}
+                      onPress={() => console.log('Small pizza selected !')}>
+                      <Text
+                        style={{
+                          color: '#F34949',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Standard
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => console.log('medium pizza selected !')}
+                      style={{
+                        borderColor: '#A9A9B0',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}>
+                      <Text
+                        style={{
+                          color: '#A9A9B0',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Garlic Roasted
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                          color: '#A9A9B0',
+                        }}>
+                        Free
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => console.log('large pizza selected !')}
+                      style={{
+                        borderColor: '#A9A9B0',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}>
+                      <Text
+                        style={{
+                          color: '#A9A9B0',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Cheese Brust
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                          color: '#A9A9B0',
+                        }}>
+                        Free
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View style={{flex: 1, marginTop: 15}}>
+                  <Text
+                    style={{
+                      fontFamily: 'SFProDisplay-Regular',
+                      fontSize: 14,
+                      color: '#3B3B3B',
+                    }}>
+                    Toppings
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: 5,
+                    }}>
+                    <TouchableOpacity
+                      style={{
+                        borderColor: '#F34949',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}
+                      onPress={() => console.log('Small pizza selected !')}>
+                      <Text
+                        style={{
+                          color: '#F34949',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Standard
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => console.log('medium pizza selected !')}
+                      style={{
+                        borderColor: '#A9A9B0',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}>
+                      <Text
+                        style={{
+                          color: '#A9A9B0',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Extra Cheese
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                          color: '#A9A9B0',
+                        }}>
+                        5DT
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => console.log('large pizza selected !')}
+                      style={{
+                        borderColor: '#A9A9B0',
+                        borderWidth: 1.5,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        height: 30,
+                        width: 100,
+                      }}>
+                      <Text
+                        style={{
+                          color: '#A9A9B0',
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                        }}>
+                        Extra Spice
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'SFProDisplay-Medium',
+                          margin: 4,
+                          color: '#A9A9B0',
+                        }}>
+                        Free
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
 
-              <View style={{flex: 1, marginTop: 15}}>
-                <Text
-                  style={{
-                    fontFamily: 'SFProDisplay-Regular',
-                    fontSize: 14,
-                    color: '#3B3B3B',
-                  }}>
-                  Crust
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 5,
-                  }}>
-                  <TouchableOpacity
-                    style={{
-                      borderColor: '#F34949',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}
-                    onPress={() => console.log('Small pizza selected !')}>
-                    <Text
-                      style={{
-                        color: '#F34949',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Standard
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => console.log('medium pizza selected !')}
-                    style={{
-                      borderColor: '#A9A9B0',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}>
-                    <Text
-                      style={{
-                        color: '#A9A9B0',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Garlic Roasted
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                        color: '#A9A9B0',
-                      }}>
-                      Free
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => console.log('large pizza selected !')}
-                    style={{
-                      borderColor: '#A9A9B0',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}>
-                    <Text
-                      style={{
-                        color: '#A9A9B0',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Cheese Brust
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                        color: '#A9A9B0',
-                      }}>
-                      Free
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+              <View>
+                <Comments />
               </View>
-
-              <View style={{flex: 1, marginTop: 15}}>
-                <Text
-                  style={{
-                    fontFamily: 'SFProDisplay-Regular',
-                    fontSize: 14,
-                    color: '#3B3B3B',
-                  }}>
-                  Toppings
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 5,
-                  }}>
-                  <TouchableOpacity
-                    style={{
-                      borderColor: '#F34949',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}
-                    onPress={() => console.log('Small pizza selected !')}>
-                    <Text
-                      style={{
-                        color: '#F34949',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Standard
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => console.log('medium pizza selected !')}
-                    style={{
-                      borderColor: '#A9A9B0',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}>
-                    <Text
-                      style={{
-                        color: '#A9A9B0',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Extra Cheese
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                        color: '#A9A9B0',
-                      }}>
-                      5DT
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => console.log('large pizza selected !')}
-                    style={{
-                      borderColor: '#A9A9B0',
-                      borderWidth: 1.5,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      height: 30,
-                      width: 100,
-                    }}>
-                    <Text
-                      style={{
-                        color: '#A9A9B0',
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                      }}>
-                      Extra Spice
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontFamily: 'SFProDisplay-Medium',
-                        margin: 4,
-                        color: '#A9A9B0',
-                      }}>
-                      Free
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-            <View style={styles.button_container}>
-              <TouchableOpacity
-                onPress={() => console.log('ss')}
-                style={{
-                  width: 330,
-                  height: 30,
-                  backgroundColor: '#F34949',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 13,
-                }}>
-                <Text
-                  style={{
-                    fontFamily: 'SFProDisplay-Semibold',
-                    fontSize: 12,
-                    color: 'white',
-                  }}>
-                  Add to Cart
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
+
+        <View style={styles.button_container}>
+          <TouchableOpacity
+            onPress={() => console.log('ss')}
+            style={{
+              width: Dimensions.get('window').width - 20,
+              height: 40,
+              backgroundColor: '#F34949',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 13,
+            }}>
+            <Text
+              style={{
+                fontFamily: 'SFProDisplay-Semibold',
+                fontSize: 12,
+                color: 'white',
+              }}>
+              Add to Cart
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -362,7 +370,7 @@ export default class Details extends React.Component {
             // marginLeft: 15,
             // marginRight: 30,
           }}>
-          <View style={{}}>
+          <View>
             <Icon
               name="ios-arrow-back-sharp"
               color="#fff"
@@ -421,5 +429,9 @@ const styles = StyleSheet.create({
   },
   button_container: {
     marginTop: 15,
+    position: 'absolute',
+    top: 0,
+    paddingTop: Dimensions.get('window').height - 60,
+    marginHorizontal: 10,
   },
 });

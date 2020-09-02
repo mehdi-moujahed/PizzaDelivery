@@ -11,6 +11,7 @@ import Menu from './Screens/Menu';
 import Details from './Screens/Details';
 import Profile from './Screens/Profile';
 import Recommended from './Screens/Recommended';
+import RecommendedItem from './Components/RecommendedItem';
 export default class App extends React.Component {
   render() {
     SplashScreen.hide();
@@ -57,6 +58,7 @@ export default class App extends React.Component {
           header: null,
         },
       },
+
       Splash: {
         screen: Splash,
         navigationOptions: {
