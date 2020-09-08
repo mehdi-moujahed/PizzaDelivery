@@ -39,12 +39,7 @@ export default class Login extends React.Component {
             <View style={{flex: 0.4, alignItems: 'center'}}>
               <Text style={styles.login_text}>Login</Text>
             </View>
-            <View
-              style={{
-                flex: 0.2,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.text_container}>
               <Text style={styles.seperator}>|</Text>
             </View>
             <View style={{flex: 0.4, alignItems: 'center'}}>
@@ -88,6 +83,11 @@ const styles = StyleSheet.create({
   main_container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  text_container: {
+    flex: 0.2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   imgBackground_container: {
     backgroundColor: 'black',

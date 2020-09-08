@@ -10,31 +10,22 @@ import {
 } from 'react-native';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import CustomMenu from '../Components/CustomMenu';
+import RecommendedItem from '../Components/RecommendedItem';
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    console.log('looooog', this.props);
   }
 
   render() {
     return (
       <ScrollView style={styles.main_container}>
-        {this.props.isFocused ? (
-          <StatusBar barStyle="dark-content" />
-        ) : (
-          <StatusBar barStyle="dark-content" />
-        )}
         <View style={styles.top_container}>
           <View>
-            <Icons
-              name="user-o"
-              size={16}
-              style={{color: '#F34949', marginLeft: 15}}>
-              {'  '}
-              <Text>Welcome</Text>
-            </Icons>
-
+            <View style={styles.welcome_container}>
+              <Icons name="user-o" size={16} style={styles.user_icon}></Icons>
+              <Text style={styles.welcome_text}>Welcome</Text>
+            </View>
             <Text style={styles.text_name}>Mehdi Moujahed</Text>
           </View>
           <TouchableOpacity
@@ -58,129 +49,14 @@ export default class Home extends React.Component {
           </View>
         </View>
         <View style={styles.pizza_container}>
-          <View style={{alignItems: 'center'}}>
-            <Image
-              source={require('../Images/pizza_2.jpg')}
-              style={styles.img_pizza}
-            />
-          </View>
-          <View
-            style={{
-              marginLeft: 20,
-              marginTop: 15,
-            }}>
-            <Text
-              style={{
-                fontSize: 18,
-                fontFamily: 'SFProDisplay-Medium',
-                color: '#3B3B3B',
-              }}>
-              Veggie Cheese Extravagenza
-            </Text>
-            <View style={{flexDirection: 'row', marginTop: 10}}>
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#F34949'}} />
-              <Icons name="star" size={18} style={{color: '#A9A9B0'}} />
-            </View>
-            <View style={styles.pizza_size}>
-              <TouchableOpacity
-                style={{
-                  borderColor: '#F34949',
-                  borderWidth: 1.5,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-                onPress={() => console.log('Small pizza selected !')}>
-                <Text
-                  style={{
-                    color: '#F34949',
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                  }}>
-                  Small{' '}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                    color: '#F34949',
-                  }}>
-                  10DT
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => console.log('medium pizza selected !')}
-                style={{
-                  borderColor: '#A9A9B0',
-                  borderWidth: 1.5,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <Text
-                  style={{
-                    color: '#A9A9B0',
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                  }}>
-                  Medium{' '}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                    color: '#A9A9B0',
-                  }}>
-                  15DT
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => console.log('large pizza selected !')}
-                style={{
-                  borderColor: '#A9A9B0',
-                  borderWidth: 1.5,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginRight: 15,
-                }}>
-                <Text
-                  style={{
-                    color: '#A9A9B0',
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                  }}>
-                  Large{' '}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontFamily: 'SFProDisplay-Medium',
-                    margin: 4,
-                    color: '#A9A9B0',
-                  }}>
-                  20DT
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.button_container}>
-            <TouchableOpacity
-              style={styles.customize_button}
-              onPress={() => this.props.navigation.navigate('Details')}>
-              <Text style={styles.customizeButtonText}>Customize & Add</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.addCart_button}
-              onPress={() => console.log('Add to Cart Pressed !')}>
-              <Text style={styles.addCartButtonText}>Add to Cart</Text>
-            </TouchableOpacity>
-          </View>
+          <RecommendedItem
+            img={require('../Images/pizza_2.jpg')}
+            title="Pizza Margherita"
+            Smallprice={12}
+            Mediumprice={15}
+            Largeprice={20}
+            navigation={this.props.navigation}
+          />
         </View>
         <View style={styles.menu_container}>
           <View style={styles.menu}>
@@ -271,18 +147,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginRight: 15,
   },
-  pizza_container: {
-    flex: 0.8,
-    marginTop: 30,
-    marginLeft: 15,
-    marginRight: 15,
-    borderRadius: 8,
-    // height: 415,
-    // width: 335,
-
-    elevation: 10,
-    backgroundColor: '#FBFBFB',
-  },
+  pizza_container: {},
   img_pizza: {
     width: 295,
     height: 172,
@@ -344,5 +209,18 @@ const styles = StyleSheet.create({
   customMenu: {
     flexDirection: 'row',
     // marginBottom: 10,
+  },
+  welcome_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  user_icon: {
+    color: '#F34949',
+    marginLeft: 15,
+  },
+  welcome_text: {
+    color: '#F34949',
+    fontSize: 16,
+    paddingLeft: 5,
   },
 });

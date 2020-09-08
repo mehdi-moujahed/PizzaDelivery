@@ -43,12 +43,7 @@ export default class Register extends React.Component {
                 Login
               </Text>
             </View>
-            <View
-              style={{
-                flex: 0.2,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+            <View style={styles.text_container}>
               <Text style={styles.seperator}>|</Text>
             </View>
             <View style={{flex: 0.4, alignItems: 'center'}}>
@@ -99,6 +94,11 @@ const styles = StyleSheet.create({
   imgBackground: {
     height: 350,
     opacity: 0.55,
+  },
+  text_container: {
+    flex: 0.2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label_container: {
     flex: 1,

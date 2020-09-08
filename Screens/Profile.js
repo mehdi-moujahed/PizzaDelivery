@@ -13,6 +13,8 @@ import Icons from 'react-native-vector-icons/SimpleLineIcons';
 import Icon from 'react-native-vector-icons/Feather';
 import Iconn from 'react-native-vector-icons/MaterialCommunityIcons';
 import Iconss from 'react-native-vector-icons/Ionicons';
+import {Avatar} from 'react-native-elements';
+import {PRIMARY_COLOR} from '../assets/colors/colors';
 
 import {MenuProvider} from 'react-native-popup-menu';
 import {
@@ -31,6 +33,14 @@ export default class Profile extends React.Component {
       email: 'moujahedmehdi@gmail.com',
       password: 'azerty',
     };
+  }
+
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content');
+    }
   }
 
   changeName = (text) => {
@@ -125,24 +135,17 @@ export default class Profile extends React.Component {
               </View>
             </View>
             <View style={styles.img_container}>
-              <Image source={require('../Images/me.png')} style={styles.img} />
+              <Avatar
+                size={130}
+                source={require('../Images/me.png')}
+                title="MM"
+                activeOpacity={0.7}
+              />
+              {/* <Image source={require('../Images/me.png')} style={styles.img} /> */}
             </View>
             <View style={styles.input_container}>
               <View>
-                <Text
-                  style={{
-                    marginLeft: 30,
-                    marginBottom: 5,
-                    fontFamily: 'SFProDisplay-Semibold',
-                    fontSize: 15,
-                  }}>
-                  Username
-                </Text>
-                {/* <TouchableOpacity
-              style={{
-                width: 300,
-                height: 50,
-              }}> */}
+                <Text style={styles.label}>Username</Text>
 
                 <TextInput
                   onChangeText={(text) => this.changeName}
@@ -150,17 +153,8 @@ export default class Profile extends React.Component {
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
-              {/* </TouchableOpacity> */}
               <View>
-                <Text
-                  style={{
-                    marginLeft: 30,
-                    marginBottom: 5,
-                    fontFamily: 'SFProDisplay-Semibold',
-                    fontSize: 15,
-                  }}>
-                  Email
-                </Text>
+                <Text style={styles.label}>Email</Text>
                 <TextInput
                   onChangeText={(text) => this.changeName}
                   defaultValue={this.state.email}
@@ -168,37 +162,15 @@ export default class Profile extends React.Component {
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
               <View>
-                <Text
-                  style={{
-                    marginLeft: 30,
-                    marginBottom: 5,
-                    fontFamily: 'SFProDisplay-Semibold',
-                    fontSize: 15,
-                  }}>
-                  Password
-                </Text>
+                <Text style={styles.label}>Password</Text>
                 <TextInput
                   onChangeText={(text) => this.changeName}
                   defaultValue={this.state.password}
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
-              <TouchableOpacity
-                style={{
-                  height: 40,
-                  backgroundColor: '#F34949',
-                  marginHorizontal: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  borderRadius: 20,
-                }}>
-                <Text
-                  style={{
-                    textTransform: 'uppercase',
-                    color: 'white',
-                  }}>
-                  update profile
-                </Text>
+              <TouchableOpacity style={styles.button_container}>
+                <Text style={styles.button_text}>update profile</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -215,12 +187,29 @@ const styles = StyleSheet.create({
   top_container: {
     width: 360,
     height: 300,
-    backgroundColor: '#F34949',
+    backgroundColor: PRIMARY_COLOR,
   },
   img: {
     height: 130,
     width: 130,
-    // borderRadius: 20,
+  },
+  button_container: {
+    height: 40,
+    backgroundColor: PRIMARY_COLOR,
+    marginHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  button_text: {
+    textTransform: 'uppercase',
+    color: 'white',
+  },
+  label: {
+    marginLeft: 30,
+    marginBottom: 5,
+    fontFamily: 'SFProDisplay-Semibold',
+    fontSize: 15,
   },
   img_container: {
     position: 'absolute',
@@ -229,7 +218,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'white',
     borderWidth: 2,
-    borderRadius: 20,
+    // borderRadius: 20,
     overflow: 'hidden',
   },
   name_container: {
@@ -252,7 +241,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'transparent',
     paddingLeft: 15,
-    borderColor: '#F34949',
+    borderColor: PRIMARY_COLOR,
     borderWidth: 1.5,
     height: 50,
     marginHorizontal: 20,

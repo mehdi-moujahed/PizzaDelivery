@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import CarouselItem from '../Components/CarouselItem';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
-import {createStackNavigator} from 'react-navigation';
-import Login from './Login';
 
 export default class Welcome extends React.Component {
   constructor(props) {
@@ -106,14 +104,7 @@ export default class Welcome extends React.Component {
               onPress={() => console.log('Google button pressed')}>
               <Text style={styles.button_text}>Signup with Google</Text>
             </TouchableOpacity>
-            <Text
-              style={{
-                color: '#929292',
-                paddingTop: 5,
-                fontSize: 10,
-              }}>
-              or
-            </Text>
+            <Text style={styles.or}>or</Text>
             <TouchableOpacity
               style={styles.mail_button}
               onPress={() => this.props.navigation.navigate('Register')}>
@@ -142,6 +133,11 @@ const styles = StyleSheet.create({
   carouselView: {
     flex: 1,
     marginTop: 60,
+  },
+  or: {
+    color: '#929292',
+    paddingTop: 5,
+    fontSize: 10,
   },
   fb_button: {
     backgroundColor: '#3B5998',

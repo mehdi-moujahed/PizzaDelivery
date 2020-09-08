@@ -1,7 +1,6 @@
 import React from 'react';
 import {TextInput, View, StyleSheet, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Icons from 'react-native-vector-icons/FontAwesome5';
 
 export default class CustomTextInput extends React.Component {
   render() {

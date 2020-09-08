@@ -6,13 +6,48 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/FontAwesome';
+import {PRIMARY_COLOR, SECONDARY_COLOR} from '../assets/colors/colors';
+import DetailItem from './DetailItem';
+
+const DATA = [
+  {
+    id: '1',
+    size: 'Small',
+    price: '10DT',
+  },
+  {
+    id: '2',
+    size: 'Medium',
+    price: '15DT',
+  },
+  {
+    id: '3',
+    size: 'Large',
+    price: '20DT',
+  },
+];
+
+const Item = ({item, onPress, isSelected, isRecommended}) => (
+  <DetailItem
+    size={item.size}
+    price={item.price}
+    onPress={onPress}
+    isSelected={isSelected}
+    isRecommended={isRecommended}
+  />
+);
 
 export default class RecommendedItem extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selectedId: DATA[0].id,
+    };
   }
+
   render() {
     const {
       img = require('../Images/pizza11.jpg'),
@@ -22,6 +57,21 @@ export default class RecommendedItem extends React.Component {
       Largeprice = '18',
       navigation,
     } = this.props;
+
+    renderItem = ({item}) => {
+      return (
+        <Item
+          item={item}
+          onPress={() =>
+            this.setState({
+              selectedId: item.id,
+            })
+          }
+          isSelected={item.id === this.state.selectedId}
+          isRecommended={true}
+        />
+      );
+    };
     return (
       <ScrollView style={{flex: 1}}>
         <View style={styles.main_container}>
@@ -29,109 +79,24 @@ export default class RecommendedItem extends React.Component {
             <View style={{alignItems: 'center'}}>
               <Image source={img} style={styles.img_pizza} />
             </View>
-            <View
-              style={{
-                marginLeft: 20,
-                marginTop: 15,
-              }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontFamily: 'SFProDisplay-Medium',
-                  color: '#3B3B3B',
-                }}>
-                {title}
-              </Text>
+            <View style={styles.second_container}>
+              <Text style={styles.pizza_title}>{title}</Text>
               <View style={{flexDirection: 'row', marginTop: 10}}>
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
+                <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
+                <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
+                <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
+                <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
+                <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
               </View>
               <View style={styles.pizza_size}>
-                <TouchableOpacity
-                  style={{
-                    borderColor: '#F34949',
-                    borderWidth: 1.5,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                  onPress={() => console.log('Small pizza selected !')}>
-                  <Text
-                    style={{
-                      color: '#F34949',
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                    }}>
-                    Small{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                      color: '#F34949',
-                    }}>
-                    {Smallprice}DT
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => console.log('medium pizza selected !')}
-                  style={{
-                    borderColor: '#A9A9B0',
-                    borderWidth: 1.5,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
-                  <Text
-                    style={{
-                      color: '#A9A9B0',
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                    }}>
-                    Medium{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                      color: '#A9A9B0',
-                    }}>
-                    {Mediumprice}DT
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => console.log('large pizza selected !')}
-                  style={{
-                    borderColor: '#A9A9B0',
-                    borderWidth: 1.5,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginRight: 15,
-                  }}>
-                  <Text
-                    style={{
-                      color: '#A9A9B0',
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                    }}>
-                    Large{' '}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 13,
-                      fontFamily: 'SFProDisplay-Medium',
-                      margin: 4,
-                      color: '#A9A9B0',
-                    }}>
-                    {Largeprice}DT
-                  </Text>
-                </TouchableOpacity>
+                <FlatList
+                  data={DATA}
+                  renderItem={renderItem}
+                  keyExtractor={(item) => item.id}
+                  extraData={this.state.selectedId}
+                  horizontal={true}
+                  contentContainerStyle={styles.flatlist}
+                />
               </View>
             </View>
             <View style={styles.button_container}>
@@ -168,6 +133,11 @@ const styles = StyleSheet.create({
   main_container: {
     flex: 1,
   },
+  flatlist: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
   img_pizza: {
     width: 295,
     height: 172,
@@ -177,8 +147,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pizza_size: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     marginTop: 10,
   },
   button_container: {
@@ -194,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addCart_button: {
-    backgroundColor: '#F34949',
+    backgroundColor: PRIMARY_COLOR,
     width: 295,
     height: 30,
     borderRadius: 10,
@@ -211,5 +179,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#fff',
     fontFamily: 'SFProDisplay-Semibold',
+  },
+  second_container: {
+    marginLeft: 23,
+    marginTop: 15,
+    marginRight: 23,
+  },
+  pizza_title: {
+    fontSize: 18,
+    fontFamily: 'SFProDisplay-Medium',
+    color: '#3B3B3B',
   },
 });

@@ -1,10 +1,30 @@
 import React from 'react';
-import {View, StyleSheet, Dimensions, Text, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Text,
+  ScrollView,
+  StatusBar,
+} from 'react-native';
 import Icons from 'react-native-vector-icons/Ionicons';
 import RecommendedItem from '../Components/RecommendedItem';
 
 export default class Recommended extends React.Component {
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content');
+    }
+  }
   render() {
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content');
+    }
+
     return (
       <ScrollView style={styles.main_container}>
         <View style={{backgroundColor: 'white'}}>
@@ -12,7 +32,7 @@ export default class Recommended extends React.Component {
             <View style={{flex: 0.2}}>
               <Icons
                 name="ios-arrow-back-sharp"
-                size={25}
+                size={30}
                 onPress={() => this.props.navigation.goBack()}
               />
             </View>
@@ -22,7 +42,7 @@ export default class Recommended extends React.Component {
                 alignItems: 'center',
                 flex: 0.6,
               }}>
-              <Text style={{fontSize: 20, fontFamily: 'SFProDisplay-Regular'}}>
+              <Text style={{fontSize: 20, fontFamily: 'SFProDisplay-Bold'}}>
                 Recommended
               </Text>
             </View>

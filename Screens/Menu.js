@@ -4,6 +4,13 @@ import CustomMenu from '../Components/CustomMenu';
 import Icons from 'react-native-vector-icons/Ionicons';
 
 export default class Menu extends React.Component {
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content');
+    }
+  }
   render() {
     StatusBar.setBarStyle('dark-content');
     if (Platform.OS === 'android') {

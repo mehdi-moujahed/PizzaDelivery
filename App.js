@@ -3,15 +3,13 @@ import {createStackNavigator, createSwitchNavigator} from 'react-navigation';
 import Login from './Screens/Login';
 import Welcome from './Screens/Welcome';
 import Register from './Screens/Register';
-import Splash from './Screens/SplashScreen';
 import SplashScreen from 'react-native-splash-screen';
 import Home from './Screens/Home';
-import CustomMenu from './Components/CustomMenu';
 import Menu from './Screens/Menu';
 import Details from './Screens/Details';
 import Profile from './Screens/Profile';
 import Recommended from './Screens/Recommended';
-import RecommendedItem from './Components/RecommendedItem';
+
 export default class App extends React.Component {
   render() {
     SplashScreen.hide();
@@ -54,13 +52,6 @@ export default class App extends React.Component {
       },
       Recommended: {
         screen: Recommended,
-        navigationOptions: {
-          header: null,
-        },
-      },
-
-      Splash: {
-        screen: Splash,
         navigationOptions: {
           header: null,
         },

@@ -1,5 +1,6 @@
 import React from 'react';
-import {TouchableOpacity, Text} from 'react-native';
+import {TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {PRIMARY_COLOR, SECONDARY_COLOR} from '../assets/colors/colors';
 
 export default class DetailItem extends React.Component {
   constructor(props) {
@@ -7,49 +8,55 @@ export default class DetailItem extends React.Component {
   }
   testSelected() {}
   render() {
-    let borderStyle = {borderColor: '#A9A9B0', color: '#A9A9B0'};
-    if (this.props.selectedItem) {
-      borderStyle = {borderColor: '#F34949', color: '#F34949'};
-    }
     return (
       <TouchableOpacity
         style={[
-          {
-            borderWidth: 1.5,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            height: 30,
-            width: 100,
-          },
-          borderStyle,
+          styles.main_container,
+          this.props.isSelected ? {borderColor: PRIMARY_COLOR} : {},
+          this.props.toppingId ? {borderColor: PRIMARY_COLOR} : {},
+          this.props.crustId ? {borderColor: PRIMARY_COLOR} : {},
+          this.props.isRecommended ? {width: 90} : {},
         ]}
         onPress={() => {
-          this.props.action();
+          this.props.onPress();
         }}>
         <Text
           style={[
-            {
-              fontSize: 10,
-              fontFamily: 'SFProDisplay-Medium',
-              margin: 4,
-            },
-            borderStyle,
+            styles.text,
+            this.props.isSelected ? {color: PRIMARY_COLOR} : {},
+            this.props.toppingId ? {color: PRIMARY_COLOR} : {},
+            this.props.crustId ? {color: PRIMARY_COLOR} : {},
           ]}>
           {this.props.size}
         </Text>
         <Text
           style={[
-            {
-              fontSize: 10,
-              fontFamily: 'SFProDisplay-Medium',
-              margin: 4,
-            },
-            borderStyle,
+            styles.text,
+            this.props.isSelected ? {color: PRIMARY_COLOR} : {},
+            this.props.toppingId ? {color: PRIMARY_COLOR} : {},
+            this.props.crustId ? {color: PRIMARY_COLOR} : {},
           ]}>
-          {this.props.price}DT
+          {this.props.price}
         </Text>
       </TouchableOpacity>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  main_container: {
+    borderWidth: 1.5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 30,
+    width: 100,
+    borderColor: SECONDARY_COLOR,
+  },
+  text: {
+    fontSize: 10,
+    fontFamily: 'SFProDisplay-Medium',
+    margin: 4,
+    color: SECONDARY_COLOR,
+  },
+});
