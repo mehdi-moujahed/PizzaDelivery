@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Dimensions,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import {PRIMARY_COLOR, SECONDARY_COLOR} from '../assets/colors/colors';
@@ -52,9 +53,6 @@ export default class RecommendedItem extends React.Component {
     const {
       img = require('../Images/pizza11.jpg'),
       title = 'Veggie Cheese Extravagenza',
-      Smallprice = '10',
-      Mediumprice = '12',
-      Largeprice = '18',
       navigation,
     } = this.props;
 
@@ -122,11 +120,10 @@ const styles = StyleSheet.create({
   pizza_container: {
     marginTop: 20,
     marginBottom: 20,
-    marginLeft: 15,
-    marginRight: 15,
     borderRadius: 8,
+    marginLeft: 20,
     height: 390,
-    width: 335,
+    width: Dimensions.get('window').width - 40,
     elevation: 10,
     backgroundColor: '#FBFBFB',
   },
@@ -181,9 +178,9 @@ const styles = StyleSheet.create({
     fontFamily: 'SFProDisplay-Semibold',
   },
   second_container: {
-    marginLeft: 23,
+    marginLeft: 15,
     marginTop: 15,
-    marginRight: 23,
+    marginRight: 15,
   },
   pizza_title: {
     fontSize: 18,

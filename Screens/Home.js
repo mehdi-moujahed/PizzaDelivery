@@ -17,6 +17,15 @@ export default class Home extends React.Component {
     super(props);
   }
 
+  componentWillMount() {
+    if (Platform.OS === 'android') {
+      <StatusBar
+        backgroundColor="rgba(255,255,255,255)"
+        translucent="true"
+        barStyle="dark-content"
+      />;
+    }
+  }
   render() {
     return (
       <ScrollView style={styles.main_container}>

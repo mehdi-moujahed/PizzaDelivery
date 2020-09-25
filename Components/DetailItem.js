@@ -2,12 +2,13 @@ import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {PRIMARY_COLOR, SECONDARY_COLOR} from '../assets/colors/colors';
 
-export default class DetailItem extends React.Component {
+class DetailItem extends React.Component {
   constructor(props) {
     super(props);
   }
   testSelected() {}
   render() {
+    console.log(this.props);
     return (
       <TouchableOpacity
         style={[
@@ -60,3 +61,5 @@ const styles = StyleSheet.create({
     color: SECONDARY_COLOR,
   },
 });
+
+export default DetailItem;

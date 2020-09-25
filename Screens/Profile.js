@@ -8,6 +8,8 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
+  ToastAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/SimpleLineIcons';
 import Icon from 'react-native-vector-icons/Feather';
@@ -15,6 +17,9 @@ import Iconn from 'react-native-vector-icons/MaterialCommunityIcons';
 import Iconss from 'react-native-vector-icons/Ionicons';
 import {Avatar} from 'react-native-elements';
 import {PRIMARY_COLOR} from '../assets/colors/colors';
+import ImagePicker from 'react-native-image-picker';
+import uuid from 'react-native-uuid';
+import storage from '@react-native-firebase/storage';
 
 import {MenuProvider} from 'react-native-popup-menu';
 import {
@@ -24,15 +29,55 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {signOut, fetchUser, updateProfile} from '../API/Users';
+
 export default class Profile extends React.Component {
   constructor() {
     super();
     this.state = {
+      isLoading: true,
       TextInputDisableStatus: false,
-      username: 'Mehdi Moujahed',
-      email: 'moujahedmehdi@gmail.com',
-      password: 'azerty',
+      username: '',
+      email: '',
+      address: '',
+      photoURL: '',
+      uploadUri: '',
     };
+  }
+  _getUsername() {
+    fetchUser().then((data) => {
+      console.log('DATA', data);
+      username = data.val.name;
+    });
+    return username;
+  }
+
+  _getUserEmail() {
+    fetchUser().then((data) => {
+      console.log('DATA', data);
+      email = data.email;
+    });
+    return email;
+  }
+  _getCurrentUser() {
+    fetchUser().then((data) => {
+      console.log('DATA', data);
+      (username = data.val.name),
+        (email = data.email),
+        (address = data.val.address);
+      photoURL = data.val.photoURL;
+      this.setState({
+        username,
+        email,
+        address,
+        isLoading: false,
+        photoURL,
+      });
+    });
+  }
+
+  componentDidMount() {
+    this._getCurrentUser();
   }
 
   componentWillUnmount() {
@@ -43,11 +88,102 @@ export default class Profile extends React.Component {
     }
   }
 
+  _updateProfil = () => {
+    const {username, address, photoURL} = this.state;
+    const userProfile = {
+      photoURL,
+      username,
+      address,
+    };
+
+    updateProfile(userProfile)
+      .then((response) => {
+        console.log(response);
+        ToastAndroid.show('PROFILE UPDATE with success', ToastAndroid.SHORT);
+        this._uploadPicture();
+
+        console.log(username, address, photoURL);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  _uploadPicture() {
+    const imageName = 'Picture ' + uuid.v4();
+    return storage()
+      .ref(imageName)
+      .putFile(this.state.photoURL)
+      .then((snapshot) => {
+        console.log(snapshot);
+        //You can check the image is now uploaded in the storage bucket
+        console.log(`${imageName} has been successfully uploaded.`);
+        let imageRef = storage().ref('/' + imageName);
+        imageRef
+          .getDownloadURL()
+          .then((url) => {
+            //from url you can fetched the uploaded image easily
+            this.setState({photoURL: url});
+            console.log('URL Download pic :', this.state.photoURL);
+          })
+          .catch((e) =>
+            console.log('getting downloadURL of image error => ', e),
+          );
+      })
+      .catch((e) => console.log('uploading image error => ', e));
+  }
+  _selectPicture() {
+    const options = {
+      title: 'Select Photo',
+      storageOptions: {
+        skipBackup: true,
+        path: 'Pizza Delivery',
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const uri = response.uri;
+        this.setState({
+          photoURL: uri,
+        });
+        console.log('image uri', this.state.photoURL);
+      }
+    });
+  }
+
+  _displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      );
+    }
+  }
+
   changeName = (text) => {
     this.setState({
       username: text,
     });
   };
+
+  changeEmail = (text) => {
+    this.setState({
+      email: text,
+    });
+  };
+
+  changeAddress = (text) => {
+    this.setState({
+      address: text,
+    });
+  };
+
   render() {
     StatusBar.setBarStyle('light-content');
     if (Platform.OS === 'android') {
@@ -59,6 +195,7 @@ export default class Profile extends React.Component {
         <MenuProvider>
           <View style={styles.main_container}>
             <View style={styles.top_container}>
+              {this._displayLoading()}
               <View
                 style={{
                   flexDirection: 'row',
@@ -79,7 +216,7 @@ export default class Profile extends React.Component {
                 <View>
                   <Menu style={{}}>
                     <MenuTrigger>
-                      <Iconn name="dots-vertical" color="white" size={35} />
+                      <Iconn name="dots-vertical" color="white" size={30} />
                     </MenuTrigger>
                     <MenuOptions
                       customStyles={{
@@ -94,7 +231,9 @@ export default class Profile extends React.Component {
                           },
                         }}
                         onSelect={() =>
-                          this.setState({TextInputDisableStatus: true})
+                          this.setState({
+                            TextInputDisableStatus: true,
+                          })
                         }
                         style={{
                           flexDirection: 'row',
@@ -110,7 +249,14 @@ export default class Profile extends React.Component {
                         </Text>
                       </MenuOption>
                       <MenuOption
-                        onSelect={() => alert(`Delete`)}
+                        onSelect={() =>
+                          signOut().then((response) => {
+                            if (response) {
+                              ToastAndroid.show('Sing Out', ToastAndroid.SHORT);
+                              this.props.navigation.navigate('Welcome');
+                            }
+                          })
+                        }
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center',
@@ -130,14 +276,19 @@ export default class Profile extends React.Component {
                 </View>
               </View>
               <View style={styles.name_container}>
-                <Text style={styles.text}>Mehdi Moujahed</Text>
-                <Text style={styles.text}>moujahedmehdi@gmail.com</Text>
+                <Text style={styles.text}>{this._getUsername()}</Text>
+                <Text style={styles.text}>{this._getUserEmail()}</Text>
               </View>
             </View>
             <View style={styles.img_container}>
               <Avatar
                 size={130}
-                source={require('../Images/me.png')}
+                source={{
+                  uri: this.state.photoURL,
+                }}
+                onPress={() => {
+                  this._selectPicture();
+                }}
                 title="MM"
                 activeOpacity={0.7}
               />
@@ -148,28 +299,30 @@ export default class Profile extends React.Component {
                 <Text style={styles.label}>Username</Text>
 
                 <TextInput
-                  onChangeText={(text) => this.changeName}
+                  onChangeText={(text) => this.changeName(text)}
                   defaultValue={this.state.username}
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
               <View>
-                <Text style={styles.label}>Email</Text>
+                <Text style={styles.label}>Email </Text>
                 <TextInput
-                  onChangeText={(text) => this.changeName}
+                  onChangeText={(text) => this.changeEmail(text)}
                   defaultValue={this.state.email}
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
               <View>
-                <Text style={styles.label}>Password</Text>
+                <Text style={styles.label}>Address</Text>
                 <TextInput
-                  onChangeText={(text) => this.changeName}
-                  defaultValue={this.state.password}
+                  onChangeText={(text) => this.changeAddress(text)}
+                  defaultValue={this.state.address}
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
-              <TouchableOpacity style={styles.button_container}>
+              <TouchableOpacity
+                style={styles.button_container}
+                onPress={() => this._updateProfil()}>
                 <Text style={styles.button_text}>update profile</Text>
               </TouchableOpacity>
             </View>
@@ -188,6 +341,15 @@ const styles = StyleSheet.create({
     width: 360,
     height: 300,
     backgroundColor: PRIMARY_COLOR,
+  },
+  loading_container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   img: {
     height: 130,

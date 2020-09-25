@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -9,11 +9,32 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  ToastAndroid,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DetailItem from '../Components/DetailItem';
 import Comments from '../Components/Comments';
+import {connect} from 'react-redux';
+import {PRIMARY_COLOR} from '../assets/colors/colors';
+
+const PIZZA = [
+  {
+    name: 'Pizza Margherita',
+    img: '../Images/pizza_margherita.jpg',
+    price: '10DT',
+  },
+  {
+    name: 'Pizza Thon',
+    img: '../Images/pizza.jpg',
+    price: '15DT',
+  },
+  {
+    name: 'pizza Pineapple',
+    img: '../Images/pineapple.jpg',
+    price: '20DT',
+  },
+];
 
 const DATA = [
   {
@@ -77,16 +98,51 @@ const Item = ({item, onPress, isSelected, crustId, toppingId}) => (
   />
 );
 
-export default class Details extends React.Component {
+class Details extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedId: DATA[0].id,
       toppingId: TOPPINGS[0].id,
       crustId: CRUST[0].id,
+      pizza: PIZZA[0],
     };
   }
 
+  _toggleFavorite() {
+    const action = {type: 'TOGGLE_FAVORITE', value: this.state.pizza};
+    this.props.dispatch(action);
+  }
+
+  _displayFavoriteIcon() {
+    if (
+      this.props.favoritesPizza.findIndex(
+        (item) => item.id == this.state.pizza.id,
+      ) !== -1
+    ) {
+      return (
+        <Icons
+          name="heart"
+          color="#fff"
+          size={30}
+          onPress={() => this._toggleFavorite()}
+        />
+      );
+    }
+
+    return (
+      <Icons
+        name="heart-o"
+        color="#fff"
+        size={30}
+        onPress={() => this._toggleFavorite()}
+      />
+    );
+  }
+
+  componentDidUpdate() {
+    console.log(this.props.favoritesPizza);
+  }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
       StatusBar.setBackgroundColor('rgba(255,255,255,255)');
@@ -95,6 +151,7 @@ export default class Details extends React.Component {
     }
   }
   render() {
+    console.log(this.props);
     StatusBar.setBarStyle('light-content');
     if (Platform.OS === 'android') {
       StatusBar.setBackgroundColor('rgba(0,0,0,0)');
@@ -229,9 +286,7 @@ export default class Details extends React.Component {
               onPress={() => this.props.navigation.goBack()}
             />
           </View>
-          <View style={styles.icon}>
-            <Icons name="heart-o" color="#fff" size={30} />
-          </View>
+          <View style={styles.icon}>{this._displayFavoriteIcon()}</View>
         </View>
       </View>
     );
@@ -321,3 +376,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    favoritesPizza: state.favoritesPizza,
+  };
+};
+export default connect(mapStateToProps)(Details);

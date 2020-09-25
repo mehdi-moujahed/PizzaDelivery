@@ -6,15 +6,49 @@ import {
   StatusBar,
   Platform,
   Text,
-  TextInput,
-  ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import CustomTextInput from '../Components/CustomTextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icons from 'react-native-vector-icons/FontAwesome';
+import {userLogin} from '../API/Users';
 
 export default class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      loading: false,
+    };
+  }
+
+  componentWillUnmount() {
+    if (Platform.OS === 'android') {
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
+      StatusBar.setBarStyle('dark-content');
+    }
+  }
+  Login = () => {
+    this.setState({loading: true});
+    const {email, password} = this.state;
+    const User = {
+      email,
+      password,
+    };
+
+    if (this.state.email == '' || this.state.password == '') {
+      alert('Please enter your email and password');
+    }
+    userLogin(User).then((response) => {
+      if (response) {
+        this.props.navigation.navigate('Home');
+      }
+    });
+  };
+
   render() {
     StatusBar.setBarStyle('light-content');
     if (Platform.OS === 'android') {
@@ -60,18 +94,23 @@ export default class Login extends React.Component {
           </View>
           <TouchableOpacity
             style={styles.login_button}
-            onPress={() => this.props.navigation.navigate('Home')}>
+            onPress={() => this.Login()}>
             <Text style={styles.loginButton_text}>LOGIN</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.input_container}>
           <View style={{paddingTop: 20}}>
-            <CustomTextInput placeHolder="Username" iconName="user" />
+            <CustomTextInput
+              placeHolder="Username"
+              iconName="user"
+              onChangeText={(text) => this.setState({email: text})}
+            />
             <CustomTextInput
               placeHolder="Password"
               iconName="lock"
               secureTextEntry={true}
+              onChangeText={(text) => this.setState({password: text})}
             />
           </View>
         </View>
@@ -137,12 +176,12 @@ const styles = StyleSheet.create({
   login_button: {
     backgroundColor: '#E1B894',
     borderRadius: 30,
-    width: 290,
+    width: Dimensions.get('window').width - 70,
+    marginLeft: 35,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 220,
-    marginLeft: 35,
     elevation: 5,
   },
   loginButton_text: {
@@ -155,7 +194,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 35,
     top: 250,
-    width: 290,
+    width: Dimensions.get('window').width - 70,
     height: 200,
     elevation: 15,
     borderRadius: 20,

@@ -18,7 +18,8 @@ export default class CustomTextInput extends React.Component {
           placeholder={placeHolder}
           style={styles.input}
           placeholderTextColor="#8E8E8E"
-          secureTextEntry={secureTextEntry}></TextInput>
+          secureTextEntry={secureTextEntry}
+          {...this.props}></TextInput>
       </View>
     );
   }

@@ -9,12 +9,37 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import CustomTextInput from '../Components/CustomTextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icons from 'react-native-vector-icons/FontAwesome';
+import {addUser} from '../API/Users';
 
 export default class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      password: '',
+      name: '',
+      address: '',
+      loading: false,
+    };
+  }
+  signupUser = () => {
+    this.setState({loading: true});
+    const {name, address, email, password} = this.state;
+    const newUser = {
+      name,
+      address,
+      email,
+      password,
+    };
+
+    addUser(newUser);
+  };
   render() {
     StatusBar.setBarStyle('light-content');
     if (Platform.OS === 'android') {
@@ -55,28 +80,38 @@ export default class Register extends React.Component {
         <View style={styles.second_container}>
           <TouchableOpacity
             style={styles.SignUP_button}
-            onPress={() => console.log('login pressed')}>
+            onPress={() => this.signupUser()}>
             <Text style={styles.SignUPButton_text}>SIGN UP</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.input_container}>
           <View style={{paddingTop: 20}}>
-            <CustomTextInput placeHolder="Username" iconName="user" />
+            <CustomTextInput
+              placeHolder="Username"
+              iconName="user"
+              onChangeText={(text) => this.setState({name: text})}
+            />
             <CustomTextInput
               placeHolder="E-mail"
               iconName="envelope"
               size={15}
+              onChangeText={(text) => this.setState({email: text})}
             />
             <CustomTextInput
               placeHolder="Password"
               iconName="lock"
-              secureTextEntry={true}></CustomTextInput>
-            {/* <Icons
-              name="eye"
+              secureTextEntry={true}
+              onChangeText={(text) =>
+                this.setState({password: text})
+              }></CustomTextInput>
+            <CustomTextInput
+              placeHolder="Home address"
+              iconName="home"
               size={18}
-              style={{color: 'white', left: 235, bottom: 48}}
-            /> */}
+              onChangeText={(text) =>
+                this.setState({address: text})
+              }></CustomTextInput>
           </View>
         </View>
       </KeyboardAwareScrollView>
@@ -132,16 +167,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 48.5,
     top: -45,
     backgroundColor: 'white',
-    height: 320,
+    height: Dimensions.get('window').height - 350,
   },
   SignUP_button: {
     backgroundColor: '#E1B894',
     borderRadius: 30,
-    width: 290,
+    width: Dimensions.get('window').width - 70,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 280,
+    marginTop: 320,
     marginLeft: 35,
     elevation: 5,
   },
@@ -155,8 +190,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 35,
     top: 250,
-    width: 290,
-    height: 280,
+    width: Dimensions.get('window').width - 70,
+    height: 350,
     elevation: 15,
     borderRadius: 20,
   },
