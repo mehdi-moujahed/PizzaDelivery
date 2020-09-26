@@ -37,6 +37,7 @@ export default class Profile extends React.Component {
     this.state = {
       isLoading: true,
       TextInputDisableStatus: false,
+      buttonDisableStatus: true,
       username: '',
       email: '',
       address: '',
@@ -89,7 +90,7 @@ export default class Profile extends React.Component {
   }
 
   _updateProfil = () => {
-    const {username, address, photoURL} = this.state;
+    const {username, address, photoURL, email} = this.state;
     const userProfile = {
       photoURL,
       username,
@@ -99,7 +100,7 @@ export default class Profile extends React.Component {
     updateProfile(userProfile)
       .then((response) => {
         console.log(response);
-        ToastAndroid.show('PROFILE UPDATE with success', ToastAndroid.SHORT);
+        ToastAndroid.show('PROFILE UPDATED with success', ToastAndroid.SHORT);
         this._uploadPicture();
 
         console.log(username, address, photoURL);
@@ -233,6 +234,7 @@ export default class Profile extends React.Component {
                         onSelect={() =>
                           this.setState({
                             TextInputDisableStatus: true,
+                            buttonDisableStatus: false,
                           })
                         }
                         style={{
@@ -246,6 +248,50 @@ export default class Profile extends React.Component {
                             fontSize: 16,
                           }}>
                           Edit Profile
+                        </Text>
+                      </MenuOption>
+                      <MenuOption
+                        customStyles={{
+                          optionWrapper: {
+                            paddingBottom: 20,
+                          },
+                        }}
+                        onSelect={() => {
+                          this.props.navigation.navigate('UpdateEmail');
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}>
+                        <Icon name="mail" size={15} color="black" />
+                        <Text
+                          style={{
+                            paddingLeft: 10,
+                            fontSize: 16,
+                          }}>
+                          Change Email
+                        </Text>
+                      </MenuOption>
+                      <MenuOption
+                        customStyles={{
+                          optionWrapper: {
+                            paddingBottom: 20,
+                          },
+                        }}
+                        onSelect={() => {
+                          this.props.navigation.navigate('ResetPassword');
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                        }}>
+                        <Icon name="lock" size={15} color="black" />
+                        <Text
+                          style={{
+                            paddingLeft: 10,
+                            fontSize: 16,
+                          }}>
+                          Reset Password
                         </Text>
                       </MenuOption>
                       <MenuOption
@@ -276,8 +322,8 @@ export default class Profile extends React.Component {
                 </View>
               </View>
               <View style={styles.name_container}>
-                <Text style={styles.text}>{this._getUsername()}</Text>
-                <Text style={styles.text}>{this._getUserEmail()}</Text>
+                <Text style={styles.text}>{this.state.username}</Text>
+                <Text style={styles.text}>{this.state.email}</Text>
               </View>
             </View>
             <View style={styles.img_container}>
@@ -289,7 +335,6 @@ export default class Profile extends React.Component {
                 onPress={() => {
                   this._selectPicture();
                 }}
-                title="MM"
                 activeOpacity={0.7}
               />
               {/* <Image source={require('../Images/me.png')} style={styles.img} /> */}
@@ -304,14 +349,14 @@ export default class Profile extends React.Component {
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
               </View>
-              <View>
+              {/* <View>
                 <Text style={styles.label}>Email </Text>
                 <TextInput
                   onChangeText={(text) => this.changeEmail(text)}
                   defaultValue={this.state.email}
                   style={styles.input}
                   editable={this.state.TextInputDisableStatus}></TextInput>
-              </View>
+              </View> */}
               <View>
                 <Text style={styles.label}>Address</Text>
                 <TextInput
@@ -322,6 +367,7 @@ export default class Profile extends React.Component {
               </View>
               <TouchableOpacity
                 style={styles.button_container}
+                disabled={this.state.buttonDisableStatus}
                 onPress={() => this._updateProfil()}>
                 <Text style={styles.button_text}>update profile</Text>
               </TouchableOpacity>
@@ -356,6 +402,7 @@ const styles = StyleSheet.create({
     width: 130,
   },
   button_container: {
+    marginTop: 20,
     height: 40,
     backgroundColor: PRIMARY_COLOR,
     marginHorizontal: 20,

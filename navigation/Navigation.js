@@ -15,6 +15,8 @@ import ProfileScreen from '../Screens/Profile';
 import RecommendedScreen from '../Screens/Recommended';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Favorites from '../Screens/Favorites';
+import UpdateEmail from '../Screens/UpdateEmail';
+import ResetPassword from '../Screens/ResetPassword';
 
 export default class Navigation extends React.Component {
   render() {
@@ -65,6 +67,18 @@ export default class Navigation extends React.Component {
       },
       Favorites: {
         screen: Favorites,
+        navigationOptions: {
+          header: null,
+        },
+      },
+      UpdateEmail: {
+        screen: UpdateEmail,
+        navigationOptions: {
+          header: null,
+        },
+      },
+      ResetPassword: {
+        screen: ResetPassword,
         navigationOptions: {
           header: null,
         },

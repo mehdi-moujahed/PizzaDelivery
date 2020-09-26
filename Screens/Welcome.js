@@ -60,11 +60,7 @@ export default class Welcome extends React.Component {
           marginHorizontal: 8,
           backgroundColor: 'rgba(0, 0, 0, 0.92)',
         }}
-        inactiveDotStyle={
-          {
-            // Define styles for inactive dots here
-          }
-        }
+        inactiveDotStyle={{}}
         inactiveDotOpacity={0.4}
         inactiveDotScale={0.6}
       />

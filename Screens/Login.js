@@ -8,11 +8,13 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  ToastAndroid,
 } from 'react-native';
 import CustomTextInput from '../Components/CustomTextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import {userLogin} from '../API/Users';
+import auth from '@react-native-firebase/auth';
 
 export default class Login extends React.Component {
   constructor(props) {
@@ -24,13 +26,13 @@ export default class Login extends React.Component {
     };
   }
 
-  componentWillUnmount() {
-    if (Platform.OS === 'android') {
-      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
-      StatusBar.setTranslucent(true);
-      StatusBar.setBarStyle('dark-content');
-    }
-  }
+  // componentWillUnmount() {
+  //   if (Platform.OS === 'android') {
+  //     StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+  //     StatusBar.setTranslucent(true);
+  //     StatusBar.setBarStyle('dark-content');
+  //   }
+  // }
   Login = () => {
     this.setState({loading: true});
     const {email, password} = this.state;
@@ -44,7 +46,9 @@ export default class Login extends React.Component {
     }
     userLogin(User).then((response) => {
       if (response) {
-        this.props.navigation.navigate('Home');
+        if (auth().currentUser.emailVerified)
+          this.props.navigation.navigate('Home');
+        else alert('Email address is not verified !');
       }
     });
   };
@@ -102,8 +106,9 @@ export default class Login extends React.Component {
         <View style={styles.input_container}>
           <View style={{paddingTop: 20}}>
             <CustomTextInput
-              placeHolder="Username"
-              iconName="user"
+              placeHolder="Email"
+              iconName="envelope"
+              size={15}
               onChangeText={(text) => this.setState({email: text})}
             />
             <CustomTextInput

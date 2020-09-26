@@ -2,6 +2,31 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import {ToastAndroid} from 'react-native';
 
+export const updatePassword = (newPassword) => {
+  const user = auth().currentUser;
+  return user
+    .updatePassword(newPassword)
+    .then((res) => {
+      console.log('password updated', res.val());
+    })
+    .catch((error) => console.log('error while reseting password', error));
+};
+export const updateEmail = (newEmail) => {
+  const user = auth().currentUser;
+  return user
+    .updateEmail(newEmail)
+    .then((res) => {
+      console.log('email updated', res);
+      user
+        .sendEmailVerification()
+        .then((response) => {
+          console.log('new email verification is send ', response);
+          ToastAndroid.show('Please verify your new email', ToastAndroid.LONG);
+        })
+        .catch((error) => console.log(error));
+    })
+    .catch((error) => console.log(error));
+};
 export const updateProfile = (userProfile) => {
   const user = auth().currentUser;
   return database()
@@ -13,7 +38,12 @@ export const updateProfile = (userProfile) => {
     })
     .then(() => {
       console.log('Data updated.');
-    });
+      // user
+      //   .verifyBeforeUpdateEmail(userProfile.email)
+      //   .then((res) => console.log('email has changed', res))
+      //   .catch((error) => console.log(error));
+    })
+    .catch((error) => console.log('error while updating', error));
 };
 
 export const fetchUser = () => {
