@@ -1,16 +1,17 @@
 import React from 'react';
-import {View, Image, StyleSheet, Text} from 'react-native';
+import {View, Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
 
 export default class CustomMenu extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
-    const {
-      img = require('../Images/pizza11.jpg'),
-      title = 'Veg Pizza',
-      subtitle = 'Starts from 10 DT',
-    } = this.props;
+    const {img, title, subtitle, onPress} = this.props;
     return (
       <View style={styles.main_container}>
-        <Image source={img} style={styles.img_pizza} />
+        <TouchableOpacity onPress={() => onPress()}>
+          <Image source={{uri: img}} style={styles.img_pizza} />
+        </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.subtitle}>{subtitle}</Text>
       </View>

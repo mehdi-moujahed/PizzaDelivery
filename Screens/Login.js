@@ -10,6 +10,7 @@ import {
   Dimensions,
   ToastAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import CustomTextInput from '../Components/CustomTextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Icons from 'react-native-vector-icons/FontAwesome';
@@ -41,16 +42,23 @@ export default class Login extends React.Component {
       password,
     };
 
-    if (this.state.email == '' || this.state.password == '') {
+    if (this.state.email === '' || this.state.password === '') {
       alert('Please enter your email and password');
+    } else {
+      userLogin(User).then(async (response) => {
+        if (response) {
+          if (auth().currentUser.emailVerified) {
+            // this.props.navigation.navigate('Home');
+            console.log('HERE');
+            // const jwt = await auth().currentUser.getIdTokenResult();
+            // console.log('JWT', jwt);
+            // const token = jwt.token;
+            // console.log('GENERATED TOKEN', jwt);
+            // AsyncStorage.setItem('token', jwt);
+          } else alert('Email address is not verified !');
+        }
+      });
     }
-    userLogin(User).then((response) => {
-      if (response) {
-        if (auth().currentUser.emailVerified)
-          this.props.navigation.navigate('Home');
-        else alert('Email address is not verified !');
-      }
-    });
   };
 
   render() {

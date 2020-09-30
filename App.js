@@ -14,18 +14,15 @@ import DetailScreen from './Screens/Details';
 import ProfileScreen from './Screens/Profile';
 import RecommendedScreen from './Screens/Recommended';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Button, View} from 'react-native';
+import {Button, View, AsyncStorage} from 'react-native';
 import {addUser} from './API/Users';
 import Navigation from './Navigation/Navigation';
 import {Provider} from 'react-redux';
 import Store from './Store/configureStore';
+import NavigationHooks from './Navigation/NavigationHooks';
 export default class App extends React.Component {
   render() {
-    return (
-      <Provider store={Store}>
-        <Navigation />
-      </Provider>
-    );
+    return <NavigationHooks />;
     // SplashScreen.hide();
     // let isToken = true;
     // const AppNavigator = createStackNavigator({

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 import CustomTextInput from '../Components/CustomTextInput';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -29,16 +30,38 @@ export default class Register extends React.Component {
     };
   }
   signupUser = () => {
-    this.setState({loading: true});
-    const {name, address, email, password} = this.state;
-    const newUser = {
-      name,
-      address,
-      email,
-      password,
-    };
+    if (
+      this.state.name === '' ||
+      this.state.address === '' ||
+      this.state.email === '' ||
+      this.state.password === ''
+    ) {
+      alert('Please enter all the fields !');
+      console.log('Please enter all the fields !');
+    } else {
+      this.setState({loading: true});
+      const {name, address, email, password} = this.state;
+      const newUser = {
+        name,
+        address,
+        email,
+        password,
+      };
 
-    addUser(newUser);
+      addUser(newUser)
+        .then(() => {
+          //Navigate to Login
+          ToastAndroid.show(
+            'An Email verification is sent to your Email box',
+            ToastAndroid.LONG,
+          );
+          console.log('Inscription effectuée');
+          this.props.navigation.navigate('LoginHooks');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
   render() {
     StatusBar.setBarStyle('light-content');
@@ -52,19 +75,19 @@ export default class Register extends React.Component {
           <ImageBackground
             style={styles.imgBackground}
             source={require('../Images/pizza_login.jpg')}>
-            <Icons
+            {/* <Icons
               name="arrow-left"
               color="white"
               size={20}
               style={{margin: 20}}
               onPress={() => this.props.navigation.navigate('Welcome')}
-            />
+            /> */}
           </ImageBackground>
           <View style={styles.label_container}>
             <View style={{flex: 0.4, alignItems: 'center'}}>
               <Text
                 style={styles.login_text}
-                onPress={() => this.props.navigation.navigate('Login')}>
+                onPress={() => this.props.navigation.navigate('LoginHooks')}>
                 Login
               </Text>
             </View>

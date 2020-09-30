@@ -2,6 +2,28 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import {ToastAndroid} from 'react-native';
 
+export const sendPasswordResetEmail = (email) => {
+  auth()
+    .sendPasswordResetEmail(email)
+    .then((respnse) => {
+      console.log('an email has been sent ', respnse);
+      ToastAndroid.show(
+        'An email was sent to to reset your password',
+        ToastAndroid.LONG,
+      );
+    })
+    .catch((error) => {
+      console.log('error while sending reset password email', error);
+      if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+        alert('The email address is badly formatted !');
+      }
+      if (error.code === 'auth/user-not-found') {
+        console.log('That email address is invalid !');
+        alert(' There is no user record corresponding to this email !');
+      }
+    });
+};
 export const updatePassword = (newPassword) => {
   const user = auth().currentUser;
   return user
@@ -37,13 +59,21 @@ export const updateProfile = (userProfile) => {
       address: userProfile.address,
     })
     .then(() => {
-      console.log('Data updated.');
-      // user
-      //   .verifyBeforeUpdateEmail(userProfile.email)
-      //   .then((res) => console.log('email has changed', res))
-      //   .catch((error) => console.log(error));
+      console.log('Profile updated.');
     })
     .catch((error) => console.log('error while updating', error));
+};
+
+export const getCurrentUser = () => {
+  const currentUser = auth().currentUser;
+
+  return database()
+    .ref(`/users/${currentUser.uid}`)
+    .on('value', (snapshot) => {
+      console.log('User data: ', snapshot.val());
+      const username = snapshot.val().name;
+      return username;
+    });
 };
 
 export const fetchUser = () => {
@@ -53,13 +83,6 @@ export const fetchUser = () => {
     .once('value')
     .then((snapshot) => {
       return {email: currentUser.email, val: snapshot.val()};
-      // User = {
-      //   email: Currentuser.email,
-      //   name: snapshot.val().name,
-      //   address: snapshot.val().address,
-      // };
-      // console.log('User data: ', snapshot.val());
-      // console.log(User);
     })
     .catch((error) => {
       console.error(error);
@@ -107,7 +130,7 @@ export const userLogin = (User) => {
     });
 };
 export const addUser = (newUser) => {
-  auth()
+  return auth()
     .createUserWithEmailAndPassword(newUser.email, newUser.password)
     .then((response) => {
       database()
@@ -121,16 +144,15 @@ export const addUser = (newUser) => {
 
       console.log(response);
 
-      response.user
-        .sendEmailVerification()
-        .then((response) => {
-          console.log('Email verification is sent', response);
-          ToastAndroid.show(
-            'Email verification is sent to your Email box',
-            ToastAndroid.LONG,
-          );
-        })
-        .catch((error) => console.log(error));
+      return response.user.sendEmailVerification();
+      // .then((response) => {
+      //   console.log('Email verification is sent', response);
+      //   ToastAndroid.show(
+      //     'Email verification is sent to your Email box',
+      //     ToastAndroid.LONG,
+      //   );
+      // })
+      // .catch((error) => console.log(error));
     })
     .catch((error) => {
       if (error.code === 'auth/email-already-in-use') {

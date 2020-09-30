@@ -17,73 +17,84 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Favorites from '../Screens/Favorites';
 import UpdateEmail from '../Screens/UpdateEmail';
 import ResetPassword from '../Screens/ResetPassword';
+import Cart from '../Screens/Cart';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Navigation extends React.Component {
-  render() {
+  async render() {
     SplashScreen.hide();
     let isToken = true;
-    const AppNavigator = createStackNavigator({
-      Welcome: {
-        screen: WelcomeScreen,
-        navigationOptions: {
-          header: null,
+    const AppNavigator = createStackNavigator(
+      {
+        Welcome: {
+          screen: WelcomeScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Login: {
+          screen: LoginScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Home: {
+          screen: HomeScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Menu: {
+          screen: MenuScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Details: {
+          screen: DetailScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Profile: {
+          screen: ProfileScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Recommended: {
+          screen: RecommendedScreen,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Favorites: {
+          screen: Favorites,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        UpdateEmail: {
+          screen: UpdateEmail,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        ResetPassword: {
+          screen: ResetPassword,
+          navigationOptions: {
+            header: null,
+          },
+        },
+        Cart: {
+          screen: Cart,
+          navigationOptions: {
+            header: null,
+          },
         },
       },
-      Login: {
-        screen: LoginScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Home: {
-        screen: HomeScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Menu: {
-        screen: MenuScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Details: {
-        screen: DetailScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Profile: {
-        screen: ProfileScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Recommended: {
-        screen: RecommendedScreen,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      Favorites: {
-        screen: Favorites,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      UpdateEmail: {
-        screen: UpdateEmail,
-        navigationOptions: {
-          header: null,
-        },
-      },
-      ResetPassword: {
-        screen: ResetPassword,
-        navigationOptions: {
-          header: null,
-        },
-      },
-    });
+      {initialRouteName: 'Home'},
+    );
 
     const SwitchNavigator = createSwitchNavigator(
       {
@@ -99,17 +110,18 @@ export default class Navigation extends React.Component {
             header: null,
           },
         },
-        MainNavigator: {
-          screen: AppNavigator,
-        },
+        // MainNavigator: {
+        //   screen: AppNavigator,
+        // },
       },
-      {initialRouteName: 'MainNavigator'},
+      {initialRouteName: 'Login'},
     );
 
     const BottomTabNavigator = createBottomTabNavigator(
       {
-        Home: HomeScreen,
-        Profile: ProfileScreen,
+        // Home: HomeScreen,
+        // Profile: ProfileScreen,
+        Home: AppNavigator,
       },
       {
         navigationOptions: ({navigation}) => ({
@@ -137,10 +149,19 @@ export default class Navigation extends React.Component {
         },
       },
     );
-    if (isToken) {
-      return <SwitchNavigator />;
-    } else {
-      return <BottomTabNavigator />;
-    }
+    // if (isToken) {
+    //   return <SwitchNavigator />;
+    // } else {
+    //   return <BottomTabNavigator />;
+    // }
+
+    AsyncStorage.getItem('token').then((response) => {
+      console.log('TOKEN NAV', response);
+      if (response === null) {
+        return <SwitchNavigator />;
+      } else {
+        return <BottomTabNavigator />;
+      }
+    });
   }
 }

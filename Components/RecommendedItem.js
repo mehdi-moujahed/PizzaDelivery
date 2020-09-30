@@ -51,9 +51,9 @@ export default class RecommendedItem extends React.Component {
 
   render() {
     const {
-      img = require('../Images/pizza11.jpg'),
+      img = '',
       title = 'Veggie Cheese Extravagenza',
-      navigation,
+      onPress,
     } = this.props;
 
     renderItem = ({item}) => {
@@ -75,17 +75,17 @@ export default class RecommendedItem extends React.Component {
         <View style={styles.main_container}>
           <View style={styles.pizza_container}>
             <View style={{alignItems: 'center'}}>
-              <Image source={img} style={styles.img_pizza} />
+              <Image source={{uri: img}} style={styles.img_pizza} />
             </View>
             <View style={styles.second_container}>
               <Text style={styles.pizza_title}>{title}</Text>
-              <View style={{flexDirection: 'row', marginTop: 10}}>
+              {/* <View style={{flexDirection: 'row', marginTop: 10}}>
                 <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
                 <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
                 <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
                 <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
                 <Icons name="star" size={18} style={{color: PRIMARY_COLOR}} />
-              </View>
+              </View> */}
               <View style={styles.pizza_size}>
                 <FlatList
                   data={DATA}
@@ -100,14 +100,16 @@ export default class RecommendedItem extends React.Component {
             <View style={styles.button_container}>
               <TouchableOpacity
                 style={styles.customize_button}
-                onPress={() => navigation.navigate('Details')}>
+                onPress={() => {
+                  onPress();
+                }}>
                 <Text style={styles.customizeButtonText}>Customize & Add</Text>
               </TouchableOpacity>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={styles.addCart_button}
                 onPress={() => console.log('Add to Cart Pressed !')}>
                 <Text style={styles.addCartButtonText}>Add to Cart</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         </View>
@@ -118,11 +120,11 @@ export default class RecommendedItem extends React.Component {
 
 const styles = StyleSheet.create({
   pizza_container: {
-    marginTop: 20,
+    marginTop: 5,
     marginBottom: 20,
     borderRadius: 8,
     marginLeft: 20,
-    height: 390,
+    height: 330,
     width: Dimensions.get('window').width - 40,
     elevation: 10,
     backgroundColor: '#FBFBFB',
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   customize_button: {
-    backgroundColor: '#e8e8e8',
+    backgroundColor: PRIMARY_COLOR,
     width: 295,
     height: 30,
     borderRadius: 10,
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   },
   customizeButtonText: {
     fontSize: 12,
-    color: '#3B3B3B',
+    color: '#fff',
     fontFamily: 'SFProDisplay-Semibold',
   },
   addCartButtonText: {

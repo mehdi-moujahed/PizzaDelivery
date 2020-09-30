@@ -30,8 +30,12 @@ import {
 } from 'react-native-popup-menu';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {signOut, fetchUser, updateProfile} from '../API/Users';
+import {connect} from 'react-redux';
+import {AuthContext} from '../Components/authContext';
 
-export default class Profile extends React.Component {
+class Profile extends React.Component {
+  static contextType = AuthContext;
+
   constructor() {
     super();
     this.state = {
@@ -43,36 +47,53 @@ export default class Profile extends React.Component {
       address: '',
       photoURL: '',
       uploadUri: '',
+      usernameDB: '',
+      emailDB: '',
+      oldPic: '',
     };
   }
-  _getUsername() {
-    fetchUser().then((data) => {
-      console.log('DATA', data);
-      username = data.val.name;
-    });
-    return username;
-  }
 
-  _getUserEmail() {
-    fetchUser().then((data) => {
-      console.log('DATA', data);
-      email = data.email;
-    });
-    return email;
-  }
+  onLogout = () => {
+    const {logout} = this.context;
+    logout();
+  };
+
+  // _getUsername() {
+  //   fetchUser()
+  //     .then((data) => {
+  //       console.log('DATA', data);
+  //       const username = data.val.name;
+  //       return username;
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
+
+  // _getUserEmail() {
+  //   fetchUser()
+  //     .then((data) => {
+  //       console.log('DATA', data);
+  //       const email = data.email;
+  //       return email;
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }
   _getCurrentUser() {
     fetchUser().then((data) => {
       console.log('DATA', data);
-      (username = data.val.name),
-        (email = data.email),
-        (address = data.val.address);
-      photoURL = data.val.photoURL;
+
       this.setState({
-        username,
-        email,
-        address,
+        username: data.val.name,
+        email: data.email,
+        address: data.val.address,
         isLoading: false,
-        photoURL,
+        photoURL: data.val.photoURL,
+        usernameDB: data.val.name,
+        emailDB: data.email,
+        oldPic: data.val.photoURL,
       });
     });
   }
@@ -82,48 +103,60 @@ export default class Profile extends React.Component {
   }
 
   componentWillUnmount() {
+    StatusBar.setBarStyle('dark-content');
     if (Platform.OS === 'android') {
       StatusBar.setBackgroundColor('rgba(255,255,255,255)');
       StatusBar.setTranslucent(true);
-      StatusBar.setBarStyle('dark-content');
     }
   }
 
-  _updateProfil = () => {
-    const {username, address, photoURL, email} = this.state;
+  _updateProfil = async () => {
+    const {username, address, photoURL, email, oldPic} = this.state;
+    let newPic = photoURL;
+    if (oldPic !== photoURL) {
+      newPic = await this._uploadPicture();
+    }
+
     const userProfile = {
-      photoURL,
+      photoURL: newPic,
       username,
       address,
     };
 
-    updateProfile(userProfile)
-      .then((response) => {
-        console.log(response);
-        ToastAndroid.show('PROFILE UPDATED with success', ToastAndroid.SHORT);
-        this._uploadPicture();
+    const userToState = {
+      photoURL: newPic,
+      username,
+      email,
+    };
 
+    updateProfile(userProfile)
+      .then(() => {
+        ToastAndroid.show('PROFILE UPDATED with success', ToastAndroid.SHORT);
+        const action = {type: 'SET_CURRENT_USER', value: userToState};
+        this.props.dispatch(action);
         console.log(username, address, photoURL);
       })
       .catch((error) => console.log(error));
   };
 
-  _uploadPicture() {
+  async _uploadPicture() {
     const imageName = 'Picture ' + uuid.v4();
     return storage()
       .ref(imageName)
       .putFile(this.state.photoURL)
       .then((snapshot) => {
-        console.log(snapshot);
+        // console.log(snapshot);
         //You can check the image is now uploaded in the storage bucket
-        console.log(`${imageName} has been successfully uploaded.`);
+        // console.log(`${imageName} has been successfully uploaded.`);
         let imageRef = storage().ref('/' + imageName);
-        imageRef
+        // console.log('IMAGE REF', imageRef);
+        return imageRef
           .getDownloadURL()
           .then((url) => {
             //from url you can fetched the uploaded image easily
-            this.setState({photoURL: url});
-            console.log('URL Download pic :', this.state.photoURL);
+            return url;
+            // console.log('URL', url);
+            // this.setState({photoURL: url});
           })
           .catch((e) =>
             console.log('getting downloadURL of image error => ', e),
@@ -152,7 +185,7 @@ export default class Profile extends React.Component {
         this.setState({
           photoURL: uri,
         });
-        console.log('image uri', this.state.photoURL);
+        // console.log('image uri', this.state.photoURL);
       }
     });
   }
@@ -210,7 +243,7 @@ export default class Profile extends React.Component {
                       name="ios-arrow-back-sharp"
                       size={30}
                       color="white"
-                      onPress={() => this.props.navigation.goBack()}
+                      onPress={() => this.props.navigation.navigate('Home')}
                     />
                   </View>
                 </View>
@@ -298,6 +331,7 @@ export default class Profile extends React.Component {
                         onSelect={() =>
                           signOut().then((response) => {
                             if (response) {
+                              this.onLogout();
                               ToastAndroid.show('Sing Out', ToastAndroid.SHORT);
                               this.props.navigation.navigate('Welcome');
                             }
@@ -322,8 +356,10 @@ export default class Profile extends React.Component {
                 </View>
               </View>
               <View style={styles.name_container}>
-                <Text style={styles.text}>{this.state.username}</Text>
-                <Text style={styles.text}>{this.state.email}</Text>
+                <Text style={styles.text}>
+                  {this.props.currentUser.username}
+                </Text>
+                <Text style={styles.text}>{this.props.currentUser.email}</Text>
               </View>
             </View>
             <View style={styles.img_container}>
@@ -382,6 +418,7 @@ export default class Profile extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+    // backgroundColor: 'white',
   },
   top_container: {
     width: 360,
@@ -457,3 +494,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.setCurrentUser.currentUser,
+  };
+};
+
+export default connect(mapStateToProps)(Profile);

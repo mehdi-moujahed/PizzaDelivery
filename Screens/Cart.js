@@ -9,18 +9,41 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from 'react-native';
-import RecommendedItem from '../Components/RecommendedItem';
-import {connect} from 'react-redux';
+import {getCartItems, deleteItem} from '../API/Pizzas';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
 import Icons from 'react-native-vector-icons/Ionicons';
 
-class Favorites extends React.Component {
+export default class Cart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      favoritesPizza: [],
+      cartItems: [],
     };
   }
-  renderFavoritesItem = (item) => {
+
+  _getCartItems = () => {
+    const userID = auth().currentUser.uid;
+    console.log('USER ID', userID);
+    database()
+      .ref('/cart')
+      .orderByChild('userID')
+      .equalTo(userID)
+      .on('value', (snapshot) => {
+        let cartItems = [];
+        snapshot.forEach((child) => {
+          console.log('CHILD kEY & CHILD VAL', child.key, child.val());
+          cartItems = [...cartItems, child.val()];
+        });
+        // console.log('cart items', cartItems);
+        this.setState({
+          cartItems,
+        });
+      });
+  };
+
+  renderCartItem = (item) => {
+    // console.log('image ', item.pizzaImgURL);
     return (
       <View
         style={{
@@ -28,6 +51,7 @@ class Favorites extends React.Component {
           elevation: 10,
           margin: 10,
           marginBottom: 30,
+          //  marginHorizontal: 20,
           borderRadius: 10,
         }}>
         <View
@@ -37,7 +61,7 @@ class Favorites extends React.Component {
           }}>
           <Image
             source={{
-              uri: item.imgURL,
+              uri: item.pizzaImgURL,
             }}
             style={{
               height: 150,
@@ -56,7 +80,7 @@ class Favorites extends React.Component {
               marginTop: 5,
             }}>
             <Text style={{fontSize: 15, fontFamily: 'SFProDisplay-Bold'}}>
-              {item.name}
+              {item.pizzaName}
             </Text>
           </View>
           <View
@@ -68,23 +92,36 @@ class Favorites extends React.Component {
               marginBottom: 20,
             }}>
             <View>
-              <Text style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
-                Small : {item.smallPrice} DT
-              </Text>
+              <View style={{marginBottom: 10}}>
+                <Text
+                  style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
+                  Size : {item.pizzaSize}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
+                  Price : {item.pizzaPrice}
+                </Text>
+              </View>
             </View>
             <View>
-              <Text style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
-                Medium : {item.mediumPrice} DT
-              </Text>
-            </View>
-            <View>
-              <Text style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
-                Large : {item.largePrice} DT
-              </Text>
+              <View style={{marginBottom: 10}}>
+                <Text
+                  style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
+                  Toppings : {item.pizzaToppings}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{fontSize: 15, fontFamily: 'SFProDisplay-Regular'}}>
+                  Crust : {item.pizzaCrust}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-        {/* <View
+        <View
           style={{
             justifyContent: 'center',
             alignItems: 'center',
@@ -92,25 +129,18 @@ class Favorites extends React.Component {
           }}>
           <TouchableOpacity
             style={styles.delete_button}
-            onPress={() => console.log('ss')}>
-            <Text style={styles.deleteButtonText}>
-              Delete Item From Favorites
-            </Text>
+            onPress={() => deleteItem(item.itemID)}>
+            <Text style={styles.deleteButtonText}>Delete Item From Cart</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </View>
     );
   };
-  _getFavoritesPizza() {
-    this.setState({
-      favoritesPizza: this.props.favoritesPizza,
-    });
-  }
   componentDidMount() {
-    this._getFavoritesPizza();
+    this._getCartItems();
   }
   render() {
-    console.log('favorties pizza', this.state.favoritesPizza);
+    console.log('State', this.state);
     return (
       <View style={styles.main_container}>
         <View style={styles.top_container}>
@@ -132,47 +162,34 @@ class Favorites extends React.Component {
                 fontSize: 20,
                 fontFamily: 'SFProDisplay-Bold',
               }}>
-              Favorites
+              Cart
             </Text>
           </View>
         </View>
-        {this.state.favoritesPizza.length === 0 ? (
+        {this.state.cartItems.length === 0 ? (
           <View
             style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{fontSize: 20, fontFamily: 'SFProDisplay-Bold'}}>
-              There is no pizza in your favoirtes !
+              Your Cart is Empty !
             </Text>
           </View>
         ) : (
           <FlatList
-            data={this.state.favoritesPizza}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({item}) => this.renderFavoritesItem(item)}
+            data={this.state.cartItems}
+            keyExtractor={(item) => item.itemID.toString()}
+            renderItem={({item}) => this.renderCartItem(item)}
             style={{marginTop: 20}}
           />
         )}
-        {/* <RecommendedItem
-            img={require('../Images/pizza_2.jpg')}
-            title="Pizza Margherita"
-            Smallprice={12}
-            Mediumprice={15}
-            Largeprice={20}
-            navigation={this.props.navigation}
-          /> */}
       </View>
     );
   }
 }
+
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
     backgroundColor: 'white',
-  },
-  top_container: {
-    flexDirection: 'row',
-    marginTop: 40,
-    marginHorizontal: 20,
-    marginBottom: 5,
   },
   delete_button: {
     backgroundColor: '#F34949',
@@ -187,13 +204,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'SFProDisplay-Semibold',
   },
+  top_container: {
+    flexDirection: 'row',
+    marginTop: 40,
+    marginHorizontal: 20,
+    marginBottom: 5,
+  },
 });
-
-const mapStateToProps = (state) => {
-  return {
-    favoritesPizza: state.toggleFavorite.favoritesPizza,
-  };
-};
-export default connect(mapStateToProps)(Favorites);
-
-// export default Favorites;

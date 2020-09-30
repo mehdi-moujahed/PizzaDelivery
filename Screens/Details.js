@@ -17,42 +17,42 @@ import DetailItem from '../Components/DetailItem';
 import Comments from '../Components/Comments';
 import {connect} from 'react-redux';
 import {PRIMARY_COLOR} from '../assets/colors/colors';
+import {addToCart} from '../API/Pizzas';
+// const PIZZA = [
+//   {
+//     name: 'Pizza Margherita',
+//     img: '../Images/pizza_margherita.jpg',
+//     price: '10DT',
+//   },
+//   {
+//     name: 'Pizza Thon',
+//     img: '../Images/pizza.jpg',
+//     price: '15DT',
+//   },
+//   {
+//     name: 'pizza Pineapple',
+//     img: '../Images/pineapple.jpg',
+//     price: '20DT',
+//   },
+// ];
 
-const PIZZA = [
-  {
-    name: 'Pizza Margherita',
-    img: '../Images/pizza_margherita.jpg',
-    price: '10DT',
-  },
-  {
-    name: 'Pizza Thon',
-    img: '../Images/pizza.jpg',
-    price: '15DT',
-  },
-  {
-    name: 'pizza Pineapple',
-    img: '../Images/pineapple.jpg',
-    price: '20DT',
-  },
-];
-
-const DATA = [
-  {
-    id: '1',
-    size: 'Small',
-    price: '10DT',
-  },
-  {
-    id: '2',
-    size: 'Medium',
-    price: '15DT',
-  },
-  {
-    id: '3',
-    size: 'Large',
-    price: '20DT',
-  },
-];
+// const DATA = [
+//   {
+//     id: '1',
+//     size: 'Small',
+//     price: '10DT',
+//   },
+//   {
+//     id: '2',
+//     size: 'Medium',
+//     price: '15DT',
+//   },
+//   {
+//     id: '3',
+//     size: 'Large',
+//     price: '20DT',
+//   },
+// ];
 
 const CRUST = [
   {
@@ -102,22 +102,79 @@ class Details extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedId: DATA[0].id,
+      SIZES: [
+        {
+          id: '1',
+          size: 'Small',
+          price: '10DT',
+        },
+        {
+          id: '2',
+          size: 'Medium',
+          price: '15DT',
+        },
+        {
+          id: '3',
+          size: 'Large',
+          price: '20DT',
+        },
+      ],
+
+      selectedSizeId: '1',
       toppingId: TOPPINGS[0].id,
       crustId: CRUST[0].id,
-      pizza: PIZZA[0],
+      // pizza: PIZZA[0],
     };
+
+    this.pizza = this.props.navigation.state.params.pizzaItem;
   }
 
+  componentDidMount() {}
   _toggleFavorite() {
-    const action = {type: 'TOGGLE_FAVORITE', value: this.state.pizza};
+    const action = {type: 'TOGGLE_FAVORITE', value: this.pizza};
     this.props.dispatch(action);
   }
 
+  getSelectedSize = () => {
+    const size = this.state.SIZES.find(
+      (item) => item.id === this.state.selectedSizeId,
+    );
+    return size;
+  };
+
+  getSelectedCrust = () => {
+    const crust = CRUST.find((item) => item.id === this.state.crustId);
+    return crust;
+  };
+
+  getSelectedToppings = () => {
+    const toppings = TOPPINGS.find((item) => item.id === this.state.toppingId);
+    return toppings;
+  };
+
+  _addToCart() {
+    const newOrder = {
+      pizzaName: this.pizza.name,
+      pizzaImgURL: this.pizza.imgURL,
+      pizzaSize: this.getSelectedSize().size,
+      pizzaPrice: this.getSelectedSize().price,
+      pizzaCrust: this.getSelectedCrust().size,
+      pizzaToppings: this.getSelectedToppings().size,
+    };
+    addToCart(newOrder)
+      .then((response) => {
+        console.log('Pizza ajouté avec succes', response);
+        ToastAndroid.show('Pizza added to cart', ToastAndroid.SHORT);
+      })
+      .catch((error) => {
+        console.log('error while adding to cart', error);
+        ToastAndroid.show('error while adding to cart', ToastAndroid.SHORT);
+      });
+  }
   _displayFavoriteIcon() {
     if (
       this.props.favoritesPizza.findIndex(
-        (item) => item.id == this.state.pizza.id,
+        (item) => item.id == this.pizza.id,
       ) !== -1
     ) {
       return (
@@ -141,7 +198,7 @@ class Details extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log(this.props.favoritesPizza);
+    console.log('Favorites Pizza : ', this.props.favoritesPizza);
   }
   componentWillUnmount() {
     if (Platform.OS === 'android') {
@@ -150,133 +207,136 @@ class Details extends React.Component {
       StatusBar.setBarStyle('dark-content');
     }
   }
+  renderSizesItem = (item) => {
+    let price = 0;
+    if (item.size === 'Small') {
+      price = this.pizza.smallPrice;
+    }
+    if (item.size === 'Medium') {
+      price = this.pizza.mediumPrice;
+    }
+    if (item.size === 'Large') {
+      price = this.pizza.largePrice;
+    }
+    item.price = price + ' DT';
+    return (
+      <Item
+        item={item}
+        onPress={() =>
+          this.setState({
+            selectedSizeId: item.id,
+          })
+        }
+        isSelected={item.id === this.state.selectedSizeId}
+      />
+    );
+  };
+
+  renderItemSecond = (item) => {
+    return (
+      <Item
+        item={item}
+        onPress={() => {
+          this.setState({
+            crustId: item.id,
+          });
+        }}
+        crustId={item.id === this.state.crustId}
+      />
+    );
+  };
+
+  renderItemthree = (item) => {
+    return (
+      <Item
+        item={item}
+        onPress={() => {
+          this.setState({
+            toppingId: item.id,
+          });
+        }}
+        toppingId={item.id === this.state.toppingId}
+      />
+    );
+  };
   render() {
-    console.log(this.props);
+    console.log('My pizza :', this.pizza);
     StatusBar.setBarStyle('light-content');
     if (Platform.OS === 'android') {
       StatusBar.setBackgroundColor('rgba(0,0,0,0)');
       StatusBar.setTranslucent(true);
     }
 
-    renderItem = ({item}) => {
-      return (
-        <Item
-          item={item}
-          onPress={() =>
-            this.setState({
-              selectedId: item.id,
-            })
-          }
-          isSelected={item.id === this.state.selectedId}
-        />
-      );
-    };
-
-    renderItemSecond = ({item}) => {
-      return (
-        <Item
-          item={item}
-          onPress={() => {
-            this.setState({
-              crustId: item.id,
-            });
-          }}
-          crustId={item.id === this.state.crustId}
-        />
-      );
-    };
-
-    renderItemthree = ({item}) => {
-      return (
-        <Item
-          item={item}
-          onPress={() => {
-            this.setState({
-              toppingId: item.id,
-            });
-          }}
-          toppingId={item.id === this.state.toppingId}
-        />
-      );
-    };
     return (
       <View style={{flex: 1}}>
         <ScrollView style={styles.main_container}>
-          <View style={{paddingBottom: 30}}>
-            <View style={styles.imgBackground_container}>
-              <ImageBackground
-                source={require('../Images/pizza_margherita.jpg')}
-                style={styles.imgBackground}></ImageBackground>
+          <View style={styles.imgBackground_container}>
+            <ImageBackground
+              source={{uri: this.pizza.imgURL}}
+              style={styles.imgBackground}></ImageBackground>
+          </View>
+
+          <View style={styles.second_container}>
+            <Text style={styles.title_text}>{this.pizza.name}</Text>
+            {/* <View style={{flexDirection: 'row', marginTop: 5}}>
+              <Icons name="star" size={18} style={{color: '#F34949'}} />
+              <Icons name="star" size={18} style={{color: '#F34949'}} />
+              <Icons name="star" size={18} style={{color: '#F34949'}} />
+              <Icons name="star" size={18} style={{color: '#F34949'}} />
+              <Icons name="star" size={18} style={{color: '#A9A9B0'}} />
+            </View> */}
+            <View style={styles.description_container}>
+              <Text style={styles.description_text}>
+                {this.pizza.description}
+              </Text>
             </View>
+            <View style={styles.supplements_container}>
+              <View style={{flex: 1}}>
+                <Text style={styles.supplement_title}>Sizes</Text>
+                <FlatList
+                  data={this.state.SIZES}
+                  renderItem={({item}) => this.renderSizesItem(item)}
+                  keyExtractor={(item) => item.id}
+                  extraData={this.state.selectedSizeId}
+                  horizontal={true}
+                  contentContainerStyle={styles.flatlist}
+                />
+              </View>
 
-            <View style={styles.second_container}>
-              <Text style={styles.title_text}>Pizza Margheritta</Text>
-              <View style={{flexDirection: 'row', marginTop: 5}}>
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#F34949'}} />
-                <Icons name="star" size={18} style={{color: '#A9A9B0'}} />
+              <View style={{flex: 1, marginTop: 15}}>
+                <Text style={styles.supplement_title}>Crust</Text>
+                <FlatList
+                  data={CRUST}
+                  renderItem={({item}) => this.renderItemSecond(item)}
+                  keyExtractor={(item) => item.id}
+                  extraData={this.state.crustId}
+                  horizontal={true}
+                  contentContainerStyle={styles.flatlist}
+                />
               </View>
-              <View style={styles.description_container}>
-                <Text style={styles.description_text}>
-                  For a vegetarian looking for a BIG treat that goes easy on the
-                  spices, this one's got it all.. The onions, the capsicum,
-                  those delectable mushrooms - with paneer and golden corn to
-                  top it all.
-                </Text>
-              </View>
-              <View style={styles.supplements_container}>
-                <View style={{flex: 1}}>
-                  <Text style={styles.supplement_title}>Sizes</Text>
-                  <FlatList
-                    data={DATA}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    extraData={this.state.selectedId}
-                    horizontal={true}
-                    contentContainerStyle={styles.flatlist}
-                  />
-                </View>
 
-                <View style={{flex: 1, marginTop: 15}}>
-                  <Text style={styles.supplement_title}>Crust</Text>
-                  <FlatList
-                    data={CRUST}
-                    renderItem={renderItemSecond}
-                    keyExtractor={(item) => item.id}
-                    extraData={this.state.crustId}
-                    horizontal={true}
-                    contentContainerStyle={styles.flatlist}
-                  />
-                </View>
-
-                <View style={{flex: 1, marginTop: 15}}>
-                  <Text style={styles.supplement_title}>Toppings</Text>
-                  <FlatList
-                    data={TOPPINGS}
-                    renderItem={renderItemthree}
-                    keyExtractor={(item) => item.id}
-                    extraData={this.state.toppingId}
-                    horizontal={true}
-                    contentContainerStyle={styles.flatlist}
-                  />
-                </View>
+              <View style={{flex: 1, marginTop: 15, marginBottom: 15}}>
+                <Text style={styles.supplement_title}>Toppings</Text>
+                <FlatList
+                  data={TOPPINGS}
+                  renderItem={({item}) => this.renderItemthree(item)}
+                  keyExtractor={(item) => item.id}
+                  extraData={this.state.toppingId}
+                  horizontal={true}
+                  contentContainerStyle={styles.flatlist}
+                />
               </View>
-              <View>
-                <Comments />
-              </View>
+            </View>
+            <View style={styles.button_container}>
+              <TouchableOpacity
+                onPress={() => console.log('Size selected', this._addToCart())}
+                style={styles.btnAdd}>
+                <Text style={styles.btnAdd_text}>Add to Cart</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
 
-        <View style={styles.button_container}>
-          <TouchableOpacity
-            onPress={() => console.log('ss')}
-            style={styles.btnAdd}>
-            <Text style={styles.btnAdd_text}>Add to Cart</Text>
-          </TouchableOpacity>
-        </View>
         <View style={styles.top_container}>
           <View>
             <Icon
@@ -363,11 +423,15 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   button_container: {
-    marginTop: 15,
-    position: 'absolute',
-    top: 0,
-    paddingTop: Dimensions.get('window').height - 60,
-    marginHorizontal: 10,
+    // position: 'absolute',
+    // top: 65,
+    // left: 0,
+    // right: 0,
+    // bottom: 0,
+    // paddingTop: Dimensions.get('window').height - 60,
+    // marginHorizontal: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   supplement_title: {
     fontFamily: 'SFProDisplay-Regular',
@@ -379,7 +443,7 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
   return {
-    favoritesPizza: state.favoritesPizza,
+    favoritesPizza: state.toggleFavorite.favoritesPizza,
   };
 };
 export default connect(mapStateToProps)(Details);

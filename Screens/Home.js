@@ -7,40 +7,151 @@ import {
   ScrollView,
   StatusBar,
   TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/FontAwesome';
 import CustomMenu from '../Components/CustomMenu';
 import RecommendedItem from '../Components/RecommendedItem';
-
-export default class Home extends React.Component {
+import {fetchUser, getCurrentUser} from '../API/Users';
+import {connect} from 'react-redux';
+import database from '@react-native-firebase/database';
+import {PRIMARY_COLOR} from '../assets/colors/colors';
+class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      pizzas: [],
+      recommendedItems: [],
+      isLoading: true,
+    };
   }
 
+  _getCurrentUsername() {
+    fetchUser().then((data) => {
+      console.log('DATA', data);
+      const action = {
+        type: 'SET_CURRENT_USER',
+        value: {
+          username: data.val.name,
+          email: data.email,
+          address: data.val.address,
+          photoURL: data.val.photoURL,
+        },
+      };
+      this.props.dispatch(action);
+      this.setState({
+        isLoading: false,
+      });
+    });
+  }
+  _getPizzas() {
+    database()
+      .ref('/pizzas')
+      .orderByChild('smallPrice')
+      .limitToFirst(4)
+      .on('value', (snapshot) => {
+        let pizzas = [];
+        snapshot.forEach((child) => {
+          pizzas = [...pizzas, child.val()];
+        });
+        this.setState({
+          pizzas,
+          isLoading: false,
+        });
+      });
+  }
+
+  _displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size="large" color={PRIMARY_COLOR} />
+        </View>
+      );
+    }
+  }
+  renderPizzaItem = (item) => {
+    return (
+      <CustomMenu
+        img={item.imgURL}
+        title={item.name}
+        subtitle={`Starts From ${item.smallPrice} DT`}
+        onPress={() =>
+          this.props.navigation.navigate('Details', {
+            pizzaItem: item,
+          })
+        }
+      />
+    );
+  };
+  _getFristRecommendedItem = () => {
+    database()
+      .ref('/pizzas')
+      .orderByChild('isRecommended')
+      .equalTo('true')
+      .limitToFirst(1)
+      .on('value', (snapshot) => {
+        console.log('aa', snapshot);
+        let recommendedItems = [];
+        snapshot.forEach((child) => {
+          console.log('CHILD kEY & CHILD VAL', child.key, child.val());
+          recommendedItems = [...recommendedItems, child.val()];
+        });
+        // console.log('cart items', cartItems);
+        this.setState({
+          recommendedItems,
+          isLoading: false,
+        });
+      });
+  };
+  renderRecommenedItem = (item) => {
+    return (
+      <RecommendedItem
+        img={item.imgURL}
+        title={item.name}
+        Smallprice={item.smallPrice}
+        Mediumprice={item.mediumPrice}
+        Largeprice={item.largePrice}
+        onPress={() =>
+          this.props.navigation.navigate('Details', {
+            pizzaItem: item,
+          })
+        }
+      />
+    );
+  };
+  componentDidMount() {
+    this._getCurrentUsername();
+    this._getPizzas();
+    this._getFristRecommendedItem();
+  }
   componentWillMount() {
+    StatusBar.setBarStyle('dark-content');
     if (Platform.OS === 'android') {
-      <StatusBar
-        backgroundColor="rgba(255,255,255,255)"
-        translucent="true"
-        barStyle="dark-content"
-      />;
+      StatusBar.setBackgroundColor('rgba(255,255,255,255)');
+      StatusBar.setTranslucent(true);
     }
   }
   render() {
+    // console.log('recommended items ', this.state.recommendedItems['imgURL']);
     return (
       <ScrollView style={styles.main_container}>
         <View style={styles.top_container}>
+          {this._displayLoading()}
           <View>
             <View style={styles.welcome_container}>
               <Icons name="user-o" size={16} style={styles.user_icon}></Icons>
               <Text style={styles.welcome_text}>Welcome</Text>
             </View>
-            <Text style={styles.text_name}>Mehdi Moujahed</Text>
+            <Text style={styles.text_name}>
+              {this.props.currentUser.username}
+            </Text>
           </View>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate('Profile')}>
             <Image
-              source={require('../Images/me.png')}
+              source={{uri: this.props.currentUser.photoURL}}
               style={styles.img_profile}></Image>
           </TouchableOpacity>
         </View>
@@ -58,14 +169,19 @@ export default class Home extends React.Component {
           </View>
         </View>
         <View style={styles.pizza_container}>
-          <RecommendedItem
+          <FlatList
+            data={this.state.recommendedItems}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({item}) => this.renderRecommenedItem(item)}
+          />
+          {/* <RecommendedItem
             img={require('../Images/pizza_2.jpg')}
             title="Pizza Margherita"
             Smallprice={12}
             Mediumprice={15}
             Largeprice={20}
             navigation={this.props.navigation}
-          />
+          /> */}
         </View>
         <View style={styles.menu_container}>
           <View style={styles.menu}>
@@ -82,25 +198,13 @@ export default class Home extends React.Component {
             </View>
           </View>
           <View style={styles.customMenu_container}>
-            <View style={styles.customMenu}>
-              <CustomMenu
-                img={require('../Images/pizza0.jpg')}
-                title="Pizza Margheritta"
-                subtitle="Starts From 8 DT"></CustomMenu>
-              <CustomMenu
-                img={require('../Images/pizza_margherita.jpg')}
-                title="Pizza Napolitana"
-                subtitle="Starts From 10 DT"></CustomMenu>
-            </View>
-            <View style={styles.customMenu}>
-              <CustomMenu
-                img={require('../Images/pizza11.jpg')}
-                title="Pizza Veg"
-                subtitle="Starts From 8 DT"></CustomMenu>
-              <CustomMenu
-                img={require('../Images/pizza11.jpeg')}
-                title="Pizza Fromage"
-                subtitle="Starts From 10 DT"></CustomMenu>
+            <View>
+              <FlatList
+                data={this.state.pizzas}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({item}) => this.renderPizzaItem(item)}
+                numColumns={2}
+              />
             </View>
           </View>
         </View>
@@ -121,6 +225,15 @@ const styles = StyleSheet.create({
     marginTop: 40,
     alignItems: 'center',
     // backgroundColor: 'white',
+  },
+  loading_container: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text_name: {
     fontSize: 16,
@@ -156,7 +269,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginRight: 15,
   },
-  pizza_container: {},
+  pizza_container: {
+    flex: 1,
+    marginTop: 20,
+  },
   img_pizza: {
     width: 295,
     height: 172,
@@ -233,3 +349,11 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   },
 });
+
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.setCurrentUser.currentUser,
+  };
+};
+
+export default connect(mapStateToProps)(Home);
